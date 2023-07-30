@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.project.recommendations.holders.ApiConstants.EMPTY_GENRE;
-import static com.project.recommendations.holders.ApiConstants.UNABLE_TO_FETCH_MOVIES;
+import static com.project.recommendations.holders.ApiConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +33,7 @@ public class RecommendationServiceImpl implements RecommendationService{
 
     private final ApiMessageSource apiMessageSource;
 
+    @Cacheable(cacheNames = {MOVIE_BY_TYPE}, key = "#genre")
     @Override
     public List<Movie> getMovieRecommendationsByGenre(String genre) throws BusinessException {
         LOGGER.info("Getting movies from /movies by genre : [{}]",genre);
