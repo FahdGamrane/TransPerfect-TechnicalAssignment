@@ -1,5 +1,6 @@
 package com.project.recommendations.services;
 
+import com.project.recommendations.config.ApiMessageSource;
 import com.project.recommendations.exceptions.BusinessException;
 import com.project.recommendations.holders.Movie;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +31,14 @@ public class RecommendationServiceImpl implements RecommendationService{
 
     private final RestTemplate restTemplate;
 
+    private final ApiMessageSource apiMessageSource;
+
     @Override
     public List<Movie> getMovieRecommendationsByGenre(String genre) throws BusinessException {
         LOGGER.info("Getting movies from /movies by genre : [{}]",genre);
         if(genre == null || genre.isEmpty()){
             LOGGER.error("Genre is empty");
-            throw new BusinessException(HttpStatus.BAD_REQUEST, EMPTY_GENRE);
+            throw new BusinessException(HttpStatus.BAD_REQUEST, apiMessageSource.getMessage(EMPTY_GENRE));
         }
         String formattedGenre = genre.replaceAll("\\s+", "");
         List<Movie> moviesList = getMovies();
@@ -52,10 +55,10 @@ public class RecommendationServiceImpl implements RecommendationService{
                     .getForEntity(moviesEndpointURL, Movie[].class);
         }catch (RestClientException exception) {
             LOGGER.error("Unable to fetch movies",exception);
-            throw new BusinessException(HttpStatus.BAD_REQUEST,UNABLE_TO_FETCH_MOVIES);
+            throw new BusinessException(HttpStatus.BAD_REQUEST, apiMessageSource.getMessage(UNABLE_TO_FETCH_MOVIES));
         }
         if (responseEntity.getBody() == null){
-            throw new BusinessException(HttpStatus.BAD_REQUEST,UNABLE_TO_FETCH_MOVIES);
+            throw new BusinessException(HttpStatus.BAD_REQUEST, apiMessageSource.getMessage(UNABLE_TO_FETCH_MOVIES));
         }
         return Arrays.stream(responseEntity.getBody()).toList();
     }
