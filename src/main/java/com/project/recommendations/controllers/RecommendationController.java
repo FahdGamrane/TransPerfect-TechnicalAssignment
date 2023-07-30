@@ -3,6 +3,7 @@ package com.project.recommendations.controllers;
 import com.project.recommendations.exceptions.BusinessException;
 import com.project.recommendations.holders.Movie;
 import com.project.recommendations.services.RecommendationService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ public class RecommendationController {
 
     private final RecommendationService recommendationService;
 
+    @Operation(summary = "Getting movies recommendations by specified genre")
     @GetMapping(MOVIES + RECOMMENDATIONS)
     public List<Movie> getRecommendations(@NonNull @RequestParam String genre) throws BusinessException {
         return recommendationService.getMovieRecommendationsByGenre(genre);
